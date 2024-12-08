@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulls and Cows Game</title>
+    <style>
+        body {
+            font-family: 'PT Mono', monospace;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"] {
+            font-family: 'PT Mono', monospace;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            font-family: 'PT Mono', monospace;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+        }
+        #output p {
+            background-color: #e9ecef;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bulls and Cows</h1>
+        <p id="instructions">Guess the number!</p>
+        <input type="text" id="guess" placeholder="Enter your guess">
+        <button onclick="checkGuess()">Submit Guess</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const digits = getDigitsFromQuery();
+        let secretNumber = generateSecretNumber(digits);
+
+        // Function to get 'digits' parameter from the URL
+        function getDigitsFromQuery() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let digits = parseInt(urlParams.get('digits')) || 4; // Default to 4 if not specified
+            if (digits < 1 || digits > 10) {
+                alert('Digits parameter must be between 1 and 10. Defaulting to 4 digits.');
+                digits = 4;
+            }
+            return digits;
+        }
+
+        // Function to generate a secret number with unique digits
+        function generateSecretNumber(n) {
+            let digits = [];
+            while (digits.length < n) {
+                let randomDigit = Math.floor(Math.random() * 10).toString();
+                if (!digits.includes(randomDigit)) {
+                    digits.push(randomDigit);
+                }
+            }
+            document.getElementById('instructions').innerText = `Guess the ${n}-digit number!`;
+            document.getElementById('guess').setAttribute('maxlength', n);
+            return digits.join('');
+        }
+
+        // Function to check the user's guess
+        function checkGuess() {
+            let guess = document.getElementById('guess').value;
+            let outputDiv = document.getElementById('output');
+
+            // Validate input length and digits
+            if (guess.length !== digits || isNaN(guess)) {
+                alert(`Please enter a valid ${digits}-digit number.`);
+                return;
+            }
+
+            // Check for duplicate digits in the guess
+            if (new Set(guess).size !== digits) {
+                alert('Digits must be unique. Please enter a number with no duplicate digits.');
+                return;
+            }
+
+            let bulls = 0;
+            let cows = 0;
+
+            for (let i = 0; i < digits; i++) {
+                if (guess[i] === secretNumber[i]) {
+                    bulls++;
+                } else if (secretNumber.includes(guess[i])) {
+                    cows++;
+                }
+            }
+
+            let result = `<p>${guess} - ${bulls}A${cows}B</p>`;
+            outputDiv.innerHTML += result;
+
+            if (bulls === digits) {
+                outputDiv.innerHTML += `<p><strong>Congratulations! You guessed the number: ${secretNumber}</strong></p>`;
+            }
+
+            document.getElementById('guess').value = '';
+        }
+
+        // Add event listener to run checkGuess() when Enter is pressed
+        document.getElementById('guess').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkGuess();
+            }
+        });
+    </script>
+</body>
+</html>
