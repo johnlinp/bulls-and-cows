@@ -66,7 +66,7 @@
     <div class="container">
         <h1>Bulls and Cows</h1>
         <p id="instructions">Guess the number!</p>
-        <input type="text" id="guess" placeholder="Enter your guess">
+        <input type="text" id="guess" placeholder="Enter your guess" autofocus>
         <button onclick="checkGuess()">Submit Guess</button>
         <div id="output"></div>
     </div>
@@ -136,6 +136,7 @@
             }
 
             document.getElementById('guess').value = '';
+            document.getElementById('guess').focus();
         }
 
         // Add event listener to run checkGuess() when Enter is pressed
